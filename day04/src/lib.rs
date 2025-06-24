@@ -1,35 +1,44 @@
 
 const XMAS: [char; 4] = ['X', 'M', 'A', 'S'];
 
-pub fn part_01(input: &str) -> i32 {
-    
+pub fn part_01(input: &str) -> usize {
+    let width = input.split("\n").count();    
     let letters: Vec<char> = input.split("\n").flat_map(|l| l.chars()).collect();
     // (0..width).for_each(|x| );
     // for (x, y) in (0..width).zip(0..width) {
-    //     println!("x: {}, {}", x, y);
+    //     println!("({x}, {y})");
     // }
-    let width = input.split("\n").count();
-    let mut res = 0;
-    for x in 0..width {
-        for y in 0..width {
-            for m in make_moves() {
-                if is_valid(&m, x, y, &letters, width) {
-                    println!("OK ({x}, {y}) -A>({:?})", &m);
-                    res += 1;
-                } 
-            }
-        }
-    }
-    res
+
+    // let mut res = 0;
+    // for x in 0..width {
+    //     for y in 0..width {
+    //         for m in make_moves() {
+    //             if is_valid(&m, x, y, &letters, width) {
+    //                 // println!("OK ({x}, {y}) -A>({:?})", &m);
+    //                 res += 1;
+    //             } 
+    //         }
+    //     }
+    // }
+
+    //let a: Vec<_> = (0..width).flat_map(|x| (0..width).map(move |y| (x, y))).collect();
+    //println!("a {a:?}");
+    (0..width)
+        .flat_map(|x| (0..width).map(move |y| (x, y)))
+        .flat_map(|p| make_moves().into_iter().map(move |m| (p, m)))
+        .filter(|param| is_valid(&param.1, param.0.0, param.0.1, &letters, width))
+        .count()
+    //res
 }
 
 fn is_valid(moves: &Vec<(i32, i32)>, x: usize, y: usize, letters: &Vec<char>, width: usize) -> bool {
     let mut i: usize = 0;
     for p in moves {
         let l = get_letter(&letters, x as i32 + p.0, y as i32 + p.1, width);
-        println!("({x}, {y}) + ({0}, {1})-> {l}", p.0, p.1);
+        // println!("({x}, {y}) + ({0}, {1})-> {l}", p.0, p.1);
         if l == XMAS[i] {
             i += 1;
+            //println!("*** {i}");
         } else {
             break;
         }
