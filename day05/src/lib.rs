@@ -5,18 +5,37 @@ pub fn part_01(input: &str) -> i32 {
     let spec: Vec<_> = input.split("\n\n").collect();
     spec[0].split("\n").for_each(|s| {
         let values: Vec<_> = s.split("|").collect();
-        order.entry(values[0].to_string()).or_insert_with(Vec::new).push(values[1].to_string());
+        order
+            .entry(values[0].to_string())
+            .or_insert_with(Vec::new)
+            .push(values[1].to_string());
     });
-    let _z = order.get("75").unwrap();
-    let data: Vec<Vec<i32>> = Vec::new();
-    let _ = spec[1].split("\n").map(|l| { 
-        let a: Vec<_> = l.split(",").collect();
-        a.count();
-    });
-    
-    
-    0
+    let res = spec[1]
+        .split("\n")
+        .map(|l| {
+            let line: Vec<_> = l.split(",").collect();
+            let mut ordered = true;
+            let mut i = 0;
+            while ordered && i < line.len() {
+                for j in i..line.len() {
+                    if order.contains_key(line[j]) && order[line[j]].contains(&line[i].to_string()) {
+                        ordered = false;
+                        break;
+                    }
+                }
+                i += 1;
+            }
+            if ordered {
+                line[line.len() / 2].parse::<i32>().expect("Not a number!!!")
+            } else {
+                0
+            }
+        })
+        .sum();
+
+    res
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -54,6 +73,6 @@ mod tests {
     #[test]
     pub fn test_01_001() {
         let res = part_01(INPUT1);
-        assert_eq!(res, 112);
+        assert_eq!(res, 143);
     }
 }
